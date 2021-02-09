@@ -3,6 +3,8 @@
 : '
 conda activate onnx
 cd /home/ftx/Documents/yangxl-2014-fe/my_forked/SfMLearner
+
+bash run_eval.sh
 '
 
 python kitti_eval/eval_depth.py \

@@ -1,22 +1,44 @@
+# coding=utf-8
+
 from __future__ import division
 import sys
+import datetime
 import cv2
 import os
+import os.path as osp
 import numpy as np
 import argparse
-from depth_evaluation_utils import *
+import logging
+
+sys.path.append(osp.join(osp.abspath(osp.dirname(__file__)), '..'))
+print('sys.path: {}'.format(sys.path))
+
+# User import
+from configs import cfg as gcfg
+from kitti_eval.depth_evaluation_utils import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--kitti_dir", type=str, help='Path to the KITTI dataset directory')
 parser.add_argument("--pred_file", type=str, help="Path to the prediction file")
 parser.add_argument("--test_file_list", type=str, default='./data/kitti/test_files_eigen.txt', 
-    help="Path to the list of test files")
+                    help="Path to the list of test files")
 parser.add_argument('--min_depth', type=float, default=1e-3, help="Threshold for minimum depth")
 parser.add_argument('--max_depth', type=float, default=80, help="Threshold for maximum depth")
 args = parser.parse_args()
 
-def main():
+
+################################################################################
+# main
+################################################################################
+if __name__ == '__main__':
+    print('sys.version:     {}'.format(sys.version))
+    print('np.__version__:  {}'.format(np.__version__))
+    print('cv2.__version__: {}'.format(cv2.__version__))
+    print('start @{}\n\n'.format(datetime.datetime.now()))
+
+    logging.info('load {}'.format(args.pred_file))
     pred_depths = np.load(args.pred_file)
+
     test_files = read_text_lines(args.test_file_list)
     gt_files, gt_calib, im_sizes, im_files, cams = \
         read_file_data(test_files, args.kitti_dir)
@@ -73,5 +95,3 @@ def main():
 
     print("{:>10}, {:>10}, {:>10}, {:>10}, {:>10}, {:>10}, {:>10}, {:>10}".format('abs_rel', 'sq_rel', 'rms', 'log_rms', 'd1_all', 'a1', 'a2', 'a3'))
     print("{:10.4f}, {:10.4f}, {:10.4f}, {:10.4f}, {:10.4f}, {:10.4f}, {:10.4f}, {:10.4f}".format(abs_rel.mean(), sq_rel.mean(), rms.mean(), log_rms.mean(), d1_all.mean(), a1.mean(), a2.mean(), a3.mean()))
-
-main()

@@ -1,0 +1,13 @@
+WORKSPACE:
+  HOME: /disk4t0/0-MonoDepth-Database/Home-SfMLearner
+  CONFIG:
+    DIR: config
+    ENABLE_LOG: true
+    RELEASE: false
+  OUTPUT:
+    DIR: output
+  LOG:
+    DIR: log
+    FILE: SfMLearner.log
+  TEMP:
+    DATA_TEMP: temp
