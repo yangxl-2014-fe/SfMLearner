@@ -2,7 +2,8 @@ from __future__ import division
 import numpy as np
 from glob import glob
 import os
-import scipy.misc
+# import scipy.misc
+import cv2
 # import sys
 # sys.path.append('../../')
 # from utils.misc import *
@@ -67,7 +68,8 @@ class kitti_odom_loader(object):
             if o == 0:
                 zoom_y = self.img_height/curr_img.shape[0]
                 zoom_x = self.img_width/curr_img.shape[1]
-            curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            # curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            curr_img = np.resize(curr_img, (self.img_height, self.img_width))
             image_seq.append(curr_img)
         return image_seq, zoom_x, zoom_y
 
@@ -108,7 +110,8 @@ class kitti_odom_loader(object):
 
     def load_image(self, drive, frame_id):
         img_file = os.path.join(self.dataset_dir, 'sequences', '%s/image_2/%s.png' % (drive, frame_id))
-        img = scipy.misc.imread(img_file)
+        # img = scipy.misc.imread(img_file)
+        img = cv2.imread(img_file)
         return img
 
     def load_intrinsics(self, drive, frame_id):

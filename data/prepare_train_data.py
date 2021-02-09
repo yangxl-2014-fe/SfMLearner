@@ -1,6 +1,7 @@
 from __future__ import division
 import argparse
-import scipy.misc
+# import scipy.misc
+import cv2
 import numpy as np
 from glob import glob
 from joblib import Parallel, delayed
@@ -45,7 +46,8 @@ def dump_example(n, args):
         if not os.path.isdir(dump_dir):
             raise
     dump_img_file = dump_dir + '/%s.jpg' % example['file_name']
-    scipy.misc.imsave(dump_img_file, image_seq.astype(np.uint8))
+    # scipy.misc.imsave(dump_img_file, image_seq.astype(np.uint8))
+    cv2.imwrite(dump_img_file, image_seq)
     dump_cam_file = dump_dir + '/%s_cam.txt' % example['file_name']
     with open(dump_cam_file, 'w') as f:
         f.write('%f,0.,%f,0.,%f,%f,0.,0.,1.' % (fx, cx, fy, cy))

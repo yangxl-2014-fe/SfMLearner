@@ -2,8 +2,10 @@ from __future__ import division
 import json
 import os
 import numpy as np
-import scipy.misc
+# import scipy.misc
+import cv2
 from glob import glob
+
 
 class cityscapes_loader(object):
     def __init__(self, 
@@ -86,12 +88,14 @@ class cityscapes_loader(object):
             curr_frame_id = '%s_%s_%s_' % (city, snippet_id, curr_local_frame_id)
             curr_image_file = os.path.join(self.dataset_dir, 'leftImg8bit_sequence', 
                                 self.split, city, curr_frame_id + 'leftImg8bit.png')
-            curr_img = scipy.misc.imread(curr_image_file)
+            # curr_img = scipy.misc.imread(curr_image_file)
+            curr_img = cv2.imread(curr_image_file)
             raw_shape = np.copy(curr_img.shape)
             if o == 0:
                 zoom_y = self.img_height/raw_shape[0]
                 zoom_x = self.img_width/raw_shape[1]
-            curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            # curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            curr_img = np.resize(curr_img, (self.img_height, self.img_width))
             if crop_bottom:
                 ymax = int(curr_img.shape[0] * 0.75)
                 curr_img = curr_img[:ymax]

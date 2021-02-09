@@ -2,7 +2,9 @@ from __future__ import division
 import numpy as np
 from glob import glob
 import os
-import scipy.misc
+# import scipy.misc
+import cv2
+
 
 class kitti_raw_loader(object):
     def __init__(self, 
@@ -96,7 +98,8 @@ class kitti_raw_loader(object):
             if o == 0:
                 zoom_y = self.img_height/curr_img.shape[0]
                 zoom_x = self.img_width/curr_img.shape[1]
-            curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            # curr_img = scipy.misc.imresize(curr_img, (self.img_height, self.img_width))
+            curr_img = np.resize(curr_img, (self.img_height, self.img_width))
             image_seq.append(curr_img)
         return image_seq, zoom_x, zoom_y
 
@@ -115,7 +118,8 @@ class kitti_raw_loader(object):
     def load_image_raw(self, drive, cid, frame_id):
         date = drive[:10]
         img_file = os.path.join(self.dataset_dir, date, drive, 'image_' + cid, 'data', frame_id + '.png')
-        img = scipy.misc.imread(img_file)
+        # img = scipy.misc.imread(img_file)
+        img = cv2.imread(img_file)
         return img
 
     def load_intrinsics_raw(self, drive, cid, frame_id):

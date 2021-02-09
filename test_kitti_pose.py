@@ -5,6 +5,7 @@ import scipy.misc
 import tensorflow as tf
 import numpy as np
 from glob import glob
+import cv2
 from SfMLearner import SfMLearner
 from kitti_eval.pose_evaluation_utils import dump_pose_seq_TUM
 
@@ -31,8 +32,10 @@ def load_image_sequence(dataset_dir,
         curr_drive, curr_frame_id = frames[curr_idx].split(' ')
         img_file = os.path.join(
             dataset_dir, 'sequences', '%s/image_2/%s.png' % (curr_drive, curr_frame_id))
-        curr_img = scipy.misc.imread(img_file)
-        curr_img = scipy.misc.imresize(curr_img, (img_height, img_width))
+        # curr_img = scipy.misc.imread(img_file)
+        # curr_img = scipy.misc.imresize(curr_img, (img_height, img_width))
+        curr_img = cv2.imread(img_file)
+        curr_img = np.resize(curr_img, (img_height, img_width))
         if o == -half_offset:
             image_seq = curr_img
         else:
