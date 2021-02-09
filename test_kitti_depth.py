@@ -1,9 +1,23 @@
+# coding=utf-8
+
 from __future__ import division
 import tensorflow as tf
 import numpy as np
 import os
+import sys
+import os.path as osp
+import logging
 # import scipy.misc
 import PIL.Image as pil
+
+sys.path.append(osp.join(osp.abspath(osp.dirname(__file__)), '..'))
+print('sys.path:')
+for item in sys.path:
+    print('  - {}'.format(item))
+
+# User import
+from configs import cfg as gcfg
+
 from SfMLearner import SfMLearner
 
 flags = tf.app.flags
@@ -15,7 +29,17 @@ flags.DEFINE_string("output_dir", None, "Output directory")
 flags.DEFINE_string("ckpt_file", None, "checkpoint file")
 FLAGS = flags.FLAGS
 
+
 def main(_):
+    # logging
+    logging.info('Settings:')
+    logging.info('  - batch_size:  {}'.format(FLAGS.batch_size))
+    logging.info('  - img_height:  {}'.format(FLAGS.img_height))
+    logging.info('  - img_width:   {}'.format(FLAGS.img_width))
+    logging.info('  - dataset_dir: {}'.format(FLAGS.dataset_dir))
+    logging.info('  - output_dir:  {}'.format(FLAGS.output_dir))
+    logging.info('  - ckpt_file:   {}'.format(FLAGS.ckpt_file))
+
     with open('data/kitti/test_files_eigen.txt', 'r') as f:
         test_files = f.readlines()
         test_files = [FLAGS.dataset_dir + t[:-1] for t in test_files]
@@ -31,6 +55,7 @@ def main(_):
     saver = tf.train.Saver([var for var in tf.model_variables()]) 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+
     with tf.Session(config=config) as sess:
         saver.restore(sess, FLAGS.ckpt_file)
         pred_all = []
@@ -44,8 +69,11 @@ def main(_):
                 idx = t + b
                 if idx >= len(test_files):
                     break
+                '''
                 fh = open(test_files[idx], 'r')
                 raw_im = pil.open(fh)
+                '''
+                raw_im = pil.open(test_files[idx])
                 scaled_im = raw_im.resize((FLAGS.img_width, FLAGS.img_height), pil.ANTIALIAS)
                 inputs[b] = np.array(scaled_im)
                 # im = scipy.misc.imread(test_files[idx])
@@ -57,6 +85,7 @@ def main(_):
                     break
                 pred_all.append(pred['depth'][b,:,:,0])
         np.save(output_file, pred_all)
+
 
 if __name__ == '__main__':
     tf.app.run()

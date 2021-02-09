@@ -1,1 +1,3 @@
 kitti_eigen_depth_predictions.npy
+download_kitti_eigen_depth_predictions.npy
+model-190532.npy
