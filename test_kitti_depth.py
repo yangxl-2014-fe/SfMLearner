@@ -9,6 +9,8 @@ import os.path as osp
 import logging
 # import scipy.misc
 import PIL.Image as pil
+import cv2
+import matplotlib.pyplot as plt
 
 sys.path.append(osp.join(osp.abspath(osp.dirname(__file__)), '..'))
 print('sys.path:')
@@ -27,18 +29,25 @@ flags.DEFINE_integer("img_width", 416, "Image width")
 flags.DEFINE_string("dataset_dir", None, "Dataset directory")
 flags.DEFINE_string("output_dir", None, "Output directory")
 flags.DEFINE_string("ckpt_file", None, "checkpoint file")
+flags.DEFINE_integer("is_sfmlearner", 0, "SfMLearner / depth_from_video")
 FLAGS = flags.FLAGS
 
 
 def main(_):
     # logging
     logging.info('Settings:')
-    logging.info('  - batch_size:  {}'.format(FLAGS.batch_size))
-    logging.info('  - img_height:  {}'.format(FLAGS.img_height))
-    logging.info('  - img_width:   {}'.format(FLAGS.img_width))
-    logging.info('  - dataset_dir: {}'.format(FLAGS.dataset_dir))
-    logging.info('  - output_dir:  {}'.format(FLAGS.output_dir))
-    logging.info('  - ckpt_file:   {}'.format(FLAGS.ckpt_file))
+    logging.info('  - batch_size:    {}'.format(FLAGS.batch_size))
+    logging.info('  - img_height:    {}'.format(FLAGS.img_height))
+    logging.info('  - img_width:     {}'.format(FLAGS.img_width))
+    logging.info('  - dataset_dir:   {}'.format(FLAGS.dataset_dir))
+    logging.info('  - output_dir:    {}'.format(FLAGS.output_dir))
+    logging.info('  - ckpt_file:     {}'.format(FLAGS.ckpt_file))
+    logging.info('  - is_sfmlearner: {}'.format(FLAGS.is_sfmlearner))
+
+    if not FLAGS.is_sfmlearner:
+        # infer_depth_via_depth_from_video_in_the_wild()
+        infer_depth_v2()
+        exit()
 
     with open('data/kitti/test_files_eigen.txt', 'r') as f:
         test_files = f.readlines()
@@ -79,13 +88,63 @@ def main(_):
                 # im = scipy.misc.imread(test_files[idx])
                 # inputs[b] = scipy.misc.imresize(im, (FLAGS.img_height, FLAGS.img_width))
             pred = sfm.inference(inputs, sess, mode='depth')
+            depth = pred['depth']
+            print('depth: {} {} {}'.format(type(depth), depth.shape, depth.dtype))
+            # depth: <class 'numpy.ndarray'> (1, 128, 416, 1) float32
             for b in range(FLAGS.batch_size):
                 idx = t + b
                 if idx >= len(test_files):
                     break
-                pred_all.append(pred['depth'][b,:,:,0])
+                pred_all.append(pred['depth'][b, :, :, 0])
         np.save(output_file, pred_all)
 
 
+def infer_depth_via_depth_from_video_in_the_wild():
+    logging.warning('infer_depth_via_depth_from_video_in_the_wild()')
+    # Depth from Video in the Wild
+    sys.path.append(
+        '/home/ftx/Documents/yangxl-2014-fe/my_forked/google-research')
+    # https://stackoverflow.com/a/42121886
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    from depth_from_video_in_the_wild import model
+
+    str_img = '/disk4t0/0-MonoDepth-Database/KITTI_FULL/2011_09_26/' \
+              '2011_09_26_drive_0001_sync/image_02/data/0000000000.png'
+    str_dep = '/disk4t0/0-MonoDepth-Database/_TMP_Infered_Depth/depth.png'
+    image = cv2.imread(str_img)
+    print('image: {} {} {}'.format(type(image), image.shape, image.dtype))
+
+    train_model = model.Model(img_height=None, img_width=None, batch_size=None,
+                              is_training=False)
+    sess = tf.Session()
+    saver = tf.train.Saver()
+    saver.restore(sess,
+                  '/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/'
+                  'checkpoints_depth/kitti_learned_intrinsics/model-248900')
+    inputs = cv2.resize(image, (416, 128))[np.newaxis, :]
+    depth = train_model.inference_depth(inputs, sess)
+
+    print('\n\n{}'.format('=' * 60))
+    print('depth: {} {} {}\n\n'.format(type(depth), depth.shape, depth.dtype))
+    # depth: <class 'numpy.ndarray'> (1, 128, 416, 1) float32
+
+    dd = (depth[0] * 256)
+    cv2.imwrite(str_dep, dd)
+
+    plt.figure(figsize=(20, 10))
+    plt.imshow(image)
+    plt.figure(figsize=(20, 10))
+    plt.imshow(1 / depth[0, :, :, 0], cmap='plasma')
+
+
+def infer_depth_v2():
+    logging.warning('infer_depth_v2()')
+
+    pass
+
+
+################################################################################
+# main
+################################################################################
 if __name__ == '__main__':
     tf.app.run()
