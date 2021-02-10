@@ -12,4 +12,4 @@ download_kitti_eigen_depth_predictions.npy
 
 python kitti_eval/eval_depth.py \
   --kitti_dir=/disk4t0/0-MonoDepth-Database/KITTI_FULL/ \
-  --pred_file=kitti_eval/model-190532.npy
+  --pred_file=kitti_eval/model-359210.npy
