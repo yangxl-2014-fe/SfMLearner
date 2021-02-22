@@ -59,6 +59,7 @@ if __name__ == '__main__':
     logging.info('Params:')
     logging.info('  - tested image numbers: {}'.format(num_test))
     logging.info('  - pred_depths:          {} {} {}'.format(type(pred_depths), pred_depths.shape, pred_depths.dtype))
+    print('{} {} {}'.format('=' * 20, args.pred_file, '=' * 20))
 
     gt_depths = []
     pred_depths_resized = []

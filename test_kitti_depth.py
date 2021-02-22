@@ -146,6 +146,11 @@ def main(_):
                 pred_all.append(depth[b, :, :, 0])
         np.save(output_file, pred_all)
 
+        if FLAGS.is_sfmlearner:
+            print('{} {} {}'.format('=' * 20, FLAGS.FLAGS.ckpt_file_sfm, '=' * 20))
+        else:
+            print('{} {} {}'.format('=' * 20, FLAGS.ckpt_file_depth, '=' * 20))
+
 
 def infer_depth_via_depth_from_video_in_the_wild():
     logging.warning('infer_depth_via_depth_from_video_in_the_wild()')

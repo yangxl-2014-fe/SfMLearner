@@ -117,6 +117,10 @@ class CommonAPI:
         return self.cfg.WORKSPACE.HOME
 
     @property
+    def get_in_model_dir(self):
+        return self.cfg.WORKSPACE.INPUT.MODEL_DIR
+
+    @property
     def get_config_dir(self):
         return osp.join(self.get_home_dir, self.cfg.WORKSPACE.CONFIG.DIR)
 

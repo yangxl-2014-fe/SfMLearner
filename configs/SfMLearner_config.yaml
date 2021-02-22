@@ -4,6 +4,8 @@ WORKSPACE:
     DIR: config
     ENABLE_LOG: true
     RELEASE: false
+  INPUT:
+    MODEL_DIR: /disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/mytrain_kitti_learned_intrinsics-archive
   OUTPUT:
     DIR: output
   LOG:
