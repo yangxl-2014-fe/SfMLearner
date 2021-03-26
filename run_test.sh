@@ -33,15 +33,25 @@ model-929720
 model-950850
 model-971980
 model-993110
+
+depth_from_video_in_the_wild author provided:
+model-248900
+'
+: '
+depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/mytrain_kitti_learned_intrinsics-archive
 '
 
-depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/mytrain_kitti_learned_intrinsics-archive
+: '
+depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/2021.03.03-mytrain_kitti_learned_intrinsics
+'
+
+depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/kitti_learned_intrinsics
 
 python test_kitti_depth.py \
   --dataset_dir /disk4t0/0-MonoDepth-Database/KITTI_FULL/ \
   --output_dir tmp/ \
   --batch_size 1 \
-  --is_sfmlearner 0 \
+  --is_sfmlearner 1 \
   --ckpt_file_sfm models/model-190532 \
-  --ckpt_file_depth  ${depth_model_dir}/model-84520
+  --ckpt_file_depth  ${depth_model_dir}/model-248900
 

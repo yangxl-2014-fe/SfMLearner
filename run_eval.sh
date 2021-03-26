@@ -40,4 +40,4 @@ model-993110
 
 python kitti_eval/eval_depth.py \
   --kitti_dir=/disk4t0/0-MonoDepth-Database/KITTI_FULL/ \
-  --pred_file=tmp/model-84520.npy
+  --pred_file=tmp/model-190532.npy
