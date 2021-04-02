@@ -1,5 +1,12 @@
 #!/bin/bash
 
+source ./tools_yangxl2014fe.sh
+
+# ==========
+# time debug
+# ==========
+time_sh_start=$(date +"%s.%N")
+
 : '
 conda activate onnx
 cd /home/ftx/Documents/yangxl-2014-fe/my_forked/SfMLearner
@@ -43,15 +50,28 @@ depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/check
 
 : '
 depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/2021.03.03-mytrain_kitti_learned_intrinsics
+
+learner_choice:
+  - 0: SfMLearner
+  - 1: depth_from_video_in_the_wild
+  - 2: depth_and_motion_learning
 '
 
-depth_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/kitti_learned_intrinsics
+depth_from_video_in_the_wild_model_dir=/disk4t0/0-MonoDepth-Database/depth_from_video_in_the_wild/checkpoints_depth/kitti_learned_intrinsics
+depth_and_motion_learning_model_dir=/disk4t0/0-MonoDepth-Database/Home-depth_and_motion_learning_no_mask
 
 python test_kitti_depth.py \
-  --dataset_dir /disk4t0/0-MonoDepth-Database/KITTI_FULL/ \
+  --dataset_dir /disk4t0/0-MonoDepth-Database/KITTI/ \
   --output_dir tmp/ \
   --batch_size 1 \
-  --is_sfmlearner 1 \
+  --learner_choice 2 \
   --ckpt_file_sfm models/model-190532 \
-  --ckpt_file_depth  ${depth_model_dir}/model-248900
+  --ckpt_file_depth_from_video_in_the_wild  ${depth_from_video_in_the_wild_model_dir}/model-248900 \
+  --ckpt_file_depth_and_motion_learning ${depth_and_motion_learning_model_dir}/model.ckpt-87311
 
+# ==========
+# time debug
+# ==========
+time_sh_end=$(date +"%s.%N")
+time_diff_sh=$(bc <<< "$time_sh_end - $time_sh_start")
+text_warn "run_test.sh elapsed:        $time_diff_sh   seconds. ($time_sh_end - $time_sh_start)"

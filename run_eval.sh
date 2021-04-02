@@ -1,5 +1,12 @@
 #!/bin/bash
 
+source ./tools_yangxl2014fe.sh
+
+# ==========
+# time debug
+# ==========
+time_sh_start=$(date +"%s.%N")
+
 : '
 conda activate onnx
 cd /home/ftx/Documents/yangxl-2014-fe/my_forked/SfMLearner
@@ -41,3 +48,10 @@ model-993110
 python kitti_eval/eval_depth.py \
   --kitti_dir=/disk4t0/0-MonoDepth-Database/KITTI_FULL/ \
   --pred_file=tmp/model-190532.npy
+
+# ==========
+# time debug
+# ==========
+time_sh_end=$(date +"%s.%N")
+time_diff_sh=$(bc <<< "$time_sh_end - $time_sh_start")
+text_warn "run_eval.sh elapsed:        $time_diff_sh   seconds. ($time_sh_end - $time_sh_start)"
